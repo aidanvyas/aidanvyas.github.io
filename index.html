@@ -3,100 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Name's Blog</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-            color: #333;
-        }
-        header {
-            background-color: #333;
-            color: #fff;
-            padding: 1em 0;
-            text-align: center;
-        }
-        nav a {
-            color: #fff;
-            text-decoration: none;
-            margin: 0 1em;
-        }
-        .container {
-            width: 80%;
-            margin: 2em auto;
-            padding: 2em;
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        h1, h2 {
-            color: #333;
-        }
-        .blog-post, .research-item {
-            margin-bottom: 2em;
-        }
-        .footer {
-            text-align: center;
-            padding: 1em 0;
-            background-color: #333;
-            color: #fff;
-            position: fixed;
-            width: 100%;
-            bottom: 0;
-        }
-    </style>
+    <title>Your Name - Quantitative Research Aspirant</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
 </head>
 <body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="research.html">Research</a></li>
+                <li><a href="asset-pricing.html">Asset Pricing</a></li>
+                <li><a href="election-forecasting.html">Election Forecasting</a></li>
+            </ul>
+        </nav>
+    </header>
 
-<header>
-    <h1>Your Name</h1>
-    <nav>
-        <a href="#">Home</a>
-        <a href="#">Blog</a>
-        <a href="#">Research</a>
-        <a href="#">Contact</a>
-    </nav>
-</header>
+    <main>
+        <section id="hero">
+            <h1>Your Name</h1>
+            <p>Aspiring Quantitative Researcher | Undergraduate Student</p>
+        </section>
 
-<div class="container">
-    <section>
-        <h2>Welcome to My Personal Blog</h2>
-        <p>Welcome to my blog where I share my thoughts, research, and projects. Stay tuned for more updates!</p>
-    </section>
+        <section id="about">
+            <h2>About Me</h2>
+            <p>
+                [Your personal statement goes here. Talk about your background, interests, and goals in quantitative research.]
+            </p>
+        </section>
 
-    <section class="blog-posts">
-        <h2>Latest Blog Posts</h2>
-        <div class="blog-post">
-            <h3>Blog Post Title 1</h3>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.</p>
-            <a href="#">Read more...</a>
+        <section id="featured-research">
+            <h2>Featured Research</h2>
+            <article>
+                <h3>Research Project Title</h3>
+                <p>[Brief description of your most significant research project]</p>
+                <a href="research.html#project1">Read More</a>
+            </article>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Your Name. All rights reserved.</p>
+        <div class="social-links">
+            <a href="#"><i class="fab fa-github"></i></a>
+            <a href="#"><i class="fab fa-linkedin"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
         </div>
-        <div class="blog-post">
-            <h3>Blog Post Title 2</h3>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.</p>
-            <a href="#">Read more...</a>
-        </div>
-    </section>
+    </footer>
 
-    <section class="research">
-        <h2>My Research</h2>
-        <div class="research-item">
-            <h3>Research Project Title 1</h3>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.</p>
-            <a href="#">Read more...</a>
-        </div>
-        <div class="research-item">
-            <h3>Research Project Title 2</h3>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.</p>
-            <a href="#">Read more...</a>
-        </div>
-    </section>
-</div>
-
-<footer class="footer">
-    <p>&copy; 2024 Your Name. All rights reserved.</p>
-</footer>
-
+    <script src="script.js"></script>
 </body>
 </html>
