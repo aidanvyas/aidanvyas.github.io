@@ -1,11 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: "export", // Essential for static site generation
+  output: "export",
   images: {
     unoptimized: true,
   },
-  basePath: "", // Add this if you're using a custom domain
-  assetPrefix: "./", // Add this for GitHub Pages
+  assetPrefix: "/", // Change this
+  basePath: "",
 };
 
 module.exports = nextConfig;
