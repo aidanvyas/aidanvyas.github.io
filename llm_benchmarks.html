@@ -1,0 +1,1224 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>LLM Benchmark Results | Aidan Vyas</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/aaaakshat/cm-web-fonts@latest/fonts.css">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <style>
+            :root {
+                --text-primary: #1a1a1a;
+                --text-secondary: #666;
+                --bg-primary: #faf8f5;
+                --bg-secondary: #f5f2ed;
+                --border-color: #e5e5e5;
+                --link-color: #0066cc;
+                --link-hover: #0052a3;
+                --selection-bg: rgba(0, 100, 255, 0.15);
+                --max-width: 1100px;
+            }
+
+            body.dark-mode {
+                --text-primary: #e5e5e5;
+                --text-secondary: #999;
+                --bg-primary: #1a1a1a;
+                --bg-secondary: #252525;
+                --border-color: #333;
+                --link-color: #6db3f2;
+                --link-hover: #8bc4f7;
+            }
+
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            ::selection {
+                background: var(--selection-bg);
+            }
+
+            html {
+                font-size: 18px;
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+            }
+
+            body {
+                font-family: "Computer Modern Serif", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+                color: var(--text-primary);
+                background: var(--bg-primary);
+                line-height: 1.6;
+                transition: background-color 0.3s ease, color 0.3s ease;
+            }
+
+            .container {
+                max-width: var(--max-width);
+                margin: 0 auto;
+                padding: 2rem 1.5rem;
+            }
+
+            header {
+                margin-bottom: 3rem;
+                padding-bottom: 2rem;
+                border-bottom: 1px solid var(--border-color);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .back-link {
+                color: var(--link-color);
+                text-decoration: none;
+                font-size: 1rem;
+            }
+
+            .back-link:hover {
+                color: var(--link-hover);
+            }
+
+            .theme-toggle {
+                background: none;
+                border: 1px solid var(--border-color);
+                border-radius: 8px;
+                padding: 0.5rem 0.75rem;
+                cursor: pointer;
+                font-size: 1rem;
+                color: var(--text-primary);
+                transition: all 0.2s ease;
+            }
+
+            .theme-toggle:hover {
+                background: var(--bg-secondary);
+                border-color: var(--text-secondary);
+            }
+
+            h1 {
+                font-size: 2.2rem;
+                font-weight: 600;
+                margin-bottom: 0.5rem;
+                text-wrap: balance;
+                letter-spacing: -0.02em;
+            }
+
+            .subtitle {
+                font-size: 1.1rem;
+                color: var(--text-secondary);
+                line-height: 1.5;
+                margin-bottom: 2rem;
+            }
+
+            a {
+                color: var(--link-color);
+                text-decoration: none;
+                transition: color 0.2s ease;
+            }
+
+            a:hover {
+                color: var(--link-hover);
+            }
+
+            .toggle-container {
+                display: flex;
+                justify-content: center;
+                gap: 0.5rem;
+                margin-bottom: 1.5rem;
+            }
+
+            
+            .toggle-btn {
+                padding: 0.6rem 1.2rem;
+                border: 1px solid var(--border-color);
+                background: var(--bg-primary);
+                color: var(--text-primary);
+                font-family: inherit;
+                font-size: 0.95rem;
+                cursor: pointer;
+                border-radius: 6px;
+                transition: all 0.2s ease;
+            }
+
+            .toggle-btn:hover {
+                background: var(--bg-secondary);
+            }
+
+            .toggle-btn.active {
+                background: var(--link-color);
+                color: white;
+                border-color: var(--link-color);
+            }
+
+            .chart-note {
+                text-align: center;
+                color: var(--text-secondary);
+                font-size: 0.9rem;
+                margin-bottom: 1rem;
+                margin-top: -0.5rem;
+            }
+
+            .section-header {
+                font-size: 1.4rem;
+                font-weight: 600;
+                margin-top: 2.5rem;
+                margin-bottom: 1.5rem;
+                padding-bottom: 0.75rem;
+                border-bottom: 1px solid var(--border-color);
+            }
+
+            
+            .chart-container {
+                position: relative;
+                background: var(--bg-secondary);
+                border-radius: 12px;
+                padding: 1.5rem;
+                margin-bottom: 2rem;
+            }
+
+            .download-btn {
+                position: absolute;
+                top: 0.75rem;
+                left: 0.75rem;
+                background: var(--bg-primary);
+                border: 1px solid var(--border-color);
+                border-radius: 6px;
+                padding: 0.4rem;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .download-btn svg {
+                width: 18px;
+                height: 18px;
+                fill: var(--text-secondary);
+                transition: fill 0.2s ease;
+            }
+
+            .download-btn:hover {
+                background: var(--bg-secondary);
+                border-color: var(--text-secondary);
+            }
+
+            .download-btn:hover svg {
+                fill: var(--text-primary);
+            }
+
+            canvas {
+                max-width: 100%;
+            }
+
+            footer {
+                margin-top: 3rem;
+                padding-top: 1.5rem;
+                border-top: 1px solid var(--border-color);
+                text-align: center;
+                color: var(--text-secondary);
+                font-size: 0.9rem;
+            }
+
+            .methodology-content,
+            .acknowledgements-content {
+                color: var(--text-primary);
+                line-height: 1.7;
+            }
+
+            .methodology-content p,
+            .acknowledgements-content p {
+                margin-bottom: 1rem;
+            }
+
+            .methodology-content h3 {
+                font-size: 1.1rem;
+                font-weight: 600;
+                margin-top: 1.5rem;
+                margin-bottom: 0.75rem;
+                color: var(--text-primary);
+            }
+
+            .methodology-content h3:first-child {
+                margin-top: 0;
+            }
+
+            .methodology-content ul {
+                margin-bottom: 1rem;
+                padding-left: 1.5rem;
+            }
+
+            .methodology-content li {
+                margin-bottom: 0.25rem;
+            }
+
+            .methodology-content a,
+            .acknowledgements-content a {
+                color: var(--link-color);
+                text-decoration: none;
+            }
+
+            .methodology-content a:hover,
+            .acknowledgements-content a:hover {
+                color: var(--link-hover);
+                text-decoration: underline;
+            }
+
+            @media (max-width: 640px) {
+                html {
+                    font-size: 16px;
+                }
+
+                h1 {
+                    font-size: 1.6rem;
+                }
+
+                .container {
+                    padding: 1.5rem 1rem;
+                }
+
+                .chart-container {
+                    padding: 1rem;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <header>
+                <a href="index.html" class="back-link">&larr; Back</a>
+                <button class="theme-toggle" onclick="toggleTheme()">
+                    <span id="theme-icon">🌙</span>
+                </button>
+            </header>
+
+            <h1>LLM Benchmark Results</h1>
+            <p class="subtitle">Comparing frontier language models across composite intelligence indices</p>
+
+            <h2 class="section-header">Intelligence</h2>
+
+            <!-- Chart 1: Composite Index -->
+            <div class="toggle-container">
+                <button class="toggle-btn active" data-chart="main" data-value="1" onclick="switchChart('main', '1')">Composite Index 1.0</button>
+                <button class="toggle-btn" data-chart="main" data-value="2" onclick="switchChart('main', '2')">Composite Index 2.0</button>
+            </div>
+            <div class="chart-container">
+                <button class="download-btn" onclick="downloadChart('mainChart', 'main')"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-7-2l-4-4h2.5v-3h3v3H16l-4 4z"/></svg></button>
+                <canvas id="mainChart"></canvas>
+            </div>
+
+            <!-- Chart 2: Reasoning -->
+            <div class="toggle-container">
+                <button class="toggle-btn active" data-chart="reasoning" data-value="yes" onclick="switchChart('reasoning', 'yes')">Reasoning</button>
+                <button class="toggle-btn" data-chart="reasoning" data-value="no" onclick="switchChart('reasoning', 'no')">Non-Reasoning</button>
+            </div>
+            <p class="chart-note">(Composite Index 1.0)</p>
+            <div class="chart-container">
+                <button class="download-btn" onclick="downloadChart('reasoningChart', 'reasoning')"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-7-2l-4-4h2.5v-3h3v3H16l-4 4z"/></svg></button>
+                <canvas id="reasoningChart"></canvas>
+            </div>
+
+            <!-- Chart 3: Country -->
+            <div class="toggle-container">
+                <button class="toggle-btn active" data-chart="country" data-value="USA" onclick="switchChart('country', 'USA')">USA</button>
+                <button class="toggle-btn" data-chart="country" data-value="China" onclick="switchChart('country', 'China')">China</button>
+            </div>
+            <p class="chart-note">(Composite Index 1.0)</p>
+            <div class="chart-container">
+                <button class="download-btn" onclick="downloadChart('countryChart', 'country')"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-7-2l-4-4h2.5v-3h3v3H16l-4 4z"/></svg></button>
+                <canvas id="countryChart"></canvas>
+            </div>
+
+            <!-- Chart 4: Weights -->
+            <div class="toggle-container">
+                <button class="toggle-btn active" data-chart="weights" data-value="Closed" onclick="switchChart('weights', 'Closed')">Closed</button>
+                <button class="toggle-btn" data-chart="weights" data-value="Open" onclick="switchChart('weights', 'Open')">Open</button>
+            </div>
+            <p class="chart-note">(Composite Index 1.0)</p>
+            <div class="chart-container">
+                <button class="download-btn" onclick="downloadChart('weightsChart', 'weights')"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-7-2l-4-4h2.5v-3h3v3H16l-4 4z"/></svg></button>
+                <canvas id="weightsChart"></canvas>
+            </div>
+
+            <h2 class="section-header">Intelligence vs. Cost</h2>
+
+            <!-- Cost Bar Chart -->
+            <div class="toggle-container">
+                <button class="toggle-btn active" data-chart="costBar" data-value="1" onclick="switchChart('costBar', '1')">Composite Index 1.0</button>
+                <button class="toggle-btn" data-chart="costBar" data-value="2" onclick="switchChart('costBar', '2')">Composite Index 2.0</button>
+            </div>
+            <div class="chart-container">
+                <button class="download-btn" onclick="downloadChart('costBarChart', 'costBar')"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-7-2l-4-4h2.5v-3h3v3H16l-4 4z"/></svg></button>
+                <canvas id="costBarChart"></canvas>
+            </div>
+
+            <!-- Cost Scatter Chart -->
+            <div class="toggle-container">
+                <button class="toggle-btn active" data-chart="costScatter" data-value="1" onclick="switchChart('costScatter', '1')">Composite Index 1.0</button>
+                <button class="toggle-btn" data-chart="costScatter" data-value="2" onclick="switchChart('costScatter', '2')">Composite Index 2.0</button>
+            </div>
+            <div class="chart-container">
+                <button class="download-btn" onclick="downloadChart('costScatterChart', 'costScatter')"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-7-2l-4-4h2.5v-3h3v3H16l-4 4z"/></svg></button>
+                <canvas id="costScatterChart"></canvas>
+            </div>
+
+            <h2 class="section-header">Intelligence vs. Speed</h2>
+
+            <!-- Speed Bar Chart -->
+            <div class="toggle-container">
+                <button class="toggle-btn active" data-chart="speedBar" data-value="1" onclick="switchChart('speedBar', '1')">Composite Index 1.0</button>
+                <button class="toggle-btn" data-chart="speedBar" data-value="2" onclick="switchChart('speedBar', '2')">Composite Index 2.0</button>
+            </div>
+            <div class="chart-container">
+                <button class="download-btn" onclick="downloadChart('speedBarChart', 'speedBar')"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-7-2l-4-4h2.5v-3h3v3H16l-4 4z"/></svg></button>
+                <canvas id="speedBarChart"></canvas>
+            </div>
+
+            <!-- Speed Scatter Chart -->
+            <div class="toggle-container">
+                <button class="toggle-btn active" data-chart="speedScatter" data-value="1" onclick="switchChart('speedScatter', '1')">Composite Index 1.0</button>
+                <button class="toggle-btn" data-chart="speedScatter" data-value="2" onclick="switchChart('speedScatter', '2')">Composite Index 2.0</button>
+            </div>
+            <div class="chart-container">
+                <button class="download-btn" onclick="downloadChart('speedScatterChart', 'speedScatter')"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-7-2l-4-4h2.5v-3h3v3H16l-4 4z"/></svg></button>
+                <canvas id="speedScatterChart"></canvas>
+            </div>
+
+            <h2 class="section-header">Methodology</h2>
+            <div class="methodology-content">
+                <h3>Composite Indices</h3>
+                <p><strong>Composite Index 1.0</strong> is a 50/50 weighted average of <a href="https://artificialanalysis.ai/methodology/intelligence-benchmarking" target="_blank">Artificial Analysis Intelligence Index 4.0</a> and <a href="https://www.vals.ai/benchmarks/vals_index" target="_blank">Vals AI Index</a>. Vals scores (0-1 scale) are scaled to 0-100 before averaging.</p>
+
+                <p><strong>Composite Index 2.0</strong> is a weighted average of <a href="https://artificialanalysis.ai/methodology/intelligence-benchmarking" target="_blank">Artificial Analysis Intelligence Index 4.0</a> (40%), <a href="https://www.vals.ai/benchmarks/vals_multimodal_index" target="_blank">Vals Multimodal Index</a> (40%), and <a href="https://arcprize.org/arc-agi/2/" target="_blank">ARC-AGI-2</a> (20%). Composite Index 2.0 is only calculated for models that have scores on all three benchmarks. Future iterations may incorporate <a href="https://metr.org/blog/2025-03-19-measuring-ai-ability-to-complete-long-tasks/" target="_blank">METR's task completion evaluations</a> once they expand model coverage.</p>
+
+                <h3>Source Benchmarks</h3>
+                <p><strong>Artificial Analysis Intelligence Index 4.0</strong> combines 10 evaluations across four equally-weighted categories: Agents (<a href="https://artificialanalysis.ai/evaluations/gdpval-aa" target="_blank">GDPval-AA</a>, <a href="https://arxiv.org/abs/2506.07982" target="_blank">τ²-Bench Telecom</a>), Coding (<a href="https://arxiv.org/abs/2601.11868" target="_blank">Terminal-Bench Hard</a>, <a href="https://arxiv.org/abs/2407.13168" target="_blank">SciCode</a>), General (<a href="https://artificialanalysis.ai/evaluations/artificial-analysis-long-context-reasoning" target="_blank">AA-LCR</a>, <a href="https://arxiv.org/abs/2511.13029" target="_blank">AA-Omniscience</a>, <a href="https://arxiv.org/abs/2507.02833" target="_blank">IFBench</a>), and Scientific Reasoning (<a href="https://arxiv.org/abs/2501.14249" target="_blank">Humanity's Last Exam</a>, <a href="https://arxiv.org/abs/2311.12022" target="_blank">GPQA Diamond</a>, <a href="https://arxiv.org/abs/2509.26574" target="_blank">CritPt</a>).</p>
+
+                <p><strong>Vals AI Index</strong> aggregates performance across three economic sectors weighted by their contribution to U.S. GDP: Finance (~$2T; <a href="https://www.vals.ai/benchmarks/corp_fin_v2" target="_blank">CorpFin</a>, <a href="https://arxiv.org/abs/2508.00828" target="_blank">Finance Agent</a>), Law (~$360B; <a href="https://www.vals.ai/benchmarks/case_law_v2" target="_blank">CaseLaw</a>), and Coding (~$1.4T; <a href="https://arxiv.org/abs/2310.06770" target="_blank">SWE-Bench</a>, <a href="https://arxiv.org/abs/2601.11868" target="_blank">Terminal Bench 2</a>). The Multimodal Index additionally includes Education (~$270B; <a href="https://www.vals.ai/benchmarks/sage" target="_blank">SAGE</a> for grading handwritten student work).</p>
+
+                <p><strong>ARC-AGI-2</strong> tests AI reasoning systems on tasks requiring symbolic interpretation, compositional reasoning, and contextual rule application. Pure LLMs score 0%, while AI reasoning systems achieve only single-digit percentages, yet humans can solve every task.</p>
+
+                <h3>Cost Index</h3>
+                <p><strong>Cost Index 1.0</strong> combines cost per task from Vals AI Index and total cost to complete the benchmark from Artificial Analysis, using 50/50 weighting. <strong>Cost Index 2.0</strong> adds cost per task from ARC-AGI-2, using 40/40/20 weighting to match the intelligence index. Values are log-normalized across models with available data, then combined as a weighted average. Higher values indicate more expensive models.</p>
+
+                <h3>Speed Index</h3>
+                <p><strong>Speed Index 1.0</strong> combines latency from Vals AI Index and end-to-end response time from Artificial Analysis, using 50/50 weighting. <strong>Speed Index 2.0</strong> combines latency from Vals Multimodal Index and end-to-end response time from Artificial Analysis, also using 50/50 weighting (since ARC-AGI-2 does not report speed metrics). Values are log-normalized across models in each composite. Higher values indicate slower models.</p>
+
+                <h3>Model Coverage</h3>
+                <p>Composite Index 1.0 includes all models present in both Vals AI Index and Artificial Analysis Index 4.0. Composite Index 2.0 requires the intersection of Vals Multimodal Index, ARC-AGI-2, and Artificial Analysis Index 4.0. Artificial Analysis has the broadest coverage, Vals covers most models, while ARC-AGI-2 is the limiting factor as it only publishes results for frontier models or lab partners (primarily major American labs).</p>
+                <p>Notable gaps include DeepSeek V3.2 Thinking (previously covered by Vals but not currently—we've reached out to them about this) and Qwen 3 Thinking (recently released). We hope to add these models shortly.</p>
+            </div>
+
+            <h2 class="section-header">Acknowledgements</h2>
+            <div class="acknowledgements-content">
+                <p>Special thank you to <a href="https://artificialanalysis.ai/" target="_blank">Artificial Analysis</a>, <a href="https://www.vals.ai/" target="_blank">Vals AI</a>, and <a href="https://arcprize.org/" target="_blank">ARC Prize</a> for their work on benchmarking frontier AI systems.</p>
+                <p>In the spirit of transparency, you can <a href="llm_benchmark_results.csv" download>download all of the data here</a>.</p>
+            </div>
+
+            <footer>
+                <p>&copy; 2026 Aidan Vyas</p>
+            </footer>
+        </div>
+
+        <script>
+            // Benchmark data - will be loaded from CSV
+            let benchmarkData = [];
+
+            // Parse CSV text into array of objects
+            function parseCSV(csvText) {
+                const lines = csvText.trim().replace(/\r/g, '').split('\n');
+                const headers = lines[0].split(',');
+                const data = [];
+
+                for (let i = 1; i < lines.length; i++) {
+                    const values = [];
+                    let current = '';
+                    let inQuotes = false;
+
+                    // Handle quoted fields with commas
+                    for (const char of lines[i]) {
+                        if (char === '"') {
+                            inQuotes = !inQuotes;
+                        } else if (char === ',' && !inQuotes) {
+                            values.push(current.trim());
+                            current = '';
+                        } else {
+                            current += char;
+                        }
+                    }
+                    values.push(current.trim());
+
+                    const row = {};
+                    headers.forEach((header, index) => {
+                        row[header.trim()] = values[index] || '';
+                    });
+                    data.push(row);
+                }
+                return data;
+            }
+
+            // Convert CSV row to benchmark data format
+            function csvToBenchmarkData(csvData) {
+                return csvData.map(row => {
+                    const parseNum = (val) => {
+                        const num = parseFloat(val);
+                        return isNaN(num) ? null : num;
+                    };
+
+                    return {
+                        model: row['Model'],
+                        lab: row['Lab'],
+                        index1: parseNum(row['Composite LLM Index 1.0']),
+                        index2: parseNum(row['Composite LLM Index 2.0']),
+                        cost1: parseNum(row['Composite LLM Cost 1.0']),
+                        cost2: parseNum(row['Composite LLM Cost 2.0']),
+                        speed1: parseNum(row['Composite LLM Speed 1.0']),
+                        speed2: parseNum(row['Composite LLM Speed 2.0']),
+                        reasoning: row['Reasoning']?.toLowerCase() === 'yes' ? 'yes' : 'no',
+                        country: row['Country'],
+                        weights: row['Weights']
+                    };
+                }).filter(d => d.model); // Filter out empty rows
+            }
+
+            // Load data from CSV
+            async function loadBenchmarkData() {
+                const response = await fetch('llm_benchmark_results.csv');
+                const csvText = await response.text();
+                const csvData = parseCSV(csvText);
+                benchmarkData = csvToBenchmarkData(csvData);
+            }
+
+            // Custom plugin to draw labels on Pareto frontier points
+            const frontierLabelPlugin = {
+                id: 'frontierLabels',
+                afterDatasetsDraw(chart) {
+                    if (!chart.config._config.data.frontier) return;
+
+                    const ctx = chart.ctx;
+                    const frontier = chart.config._config.data.frontier;
+                    const meta = chart.getDatasetMeta(1); // scatter dataset
+
+                    if (!meta || !meta.data) return;
+
+                    ctx.save();
+                    ctx.font = '10px "Computer Modern Serif", ui-serif, Georgia, serif';
+                    ctx.fillStyle = document.body.classList.contains('dark-mode') ? '#e5e5e5' : '#1a1a1a';
+
+                    const frontierModels = new Set(frontier.map(p => p.model));
+                    const drawnLabels = [];
+                    const pointRadius = 8;
+                    const labelHeight = 12;
+                    const padding = 4;
+
+                    // Collect all point positions for collision detection
+                    const allPoints = meta.data.map(p => ({ x: p.x, y: p.y }));
+
+                    // Define possible label positions relative to point
+                    const getPositions = (x, y, labelWidth) => [
+                        { x: x + pointRadius + padding, y: y - 4, name: 'right' },
+                        { x: x + pointRadius + padding, y: y - labelHeight - padding, name: 'top-right' },
+                        { x: x - labelWidth - padding, y: y - 4, name: 'left' },
+                        { x: x - labelWidth - padding, y: y - labelHeight - padding, name: 'top-left' },
+                        { x: x + pointRadius + padding, y: y + labelHeight, name: 'bottom-right' },
+                        { x: x - labelWidth - padding, y: y + labelHeight, name: 'bottom-left' },
+                        { x: x - labelWidth / 2, y: y - pointRadius - labelHeight, name: 'top' },
+                        { x: x - labelWidth / 2, y: y + pointRadius + labelHeight, name: 'bottom' },
+                    ];
+
+                    // Check if a label position overlaps with points or other labels
+                    const getOverlapScore = (labelX, labelY, labelWidth) => {
+                        let score = 0;
+                        const chartArea = chart.chartArea;
+
+                        // Penalty for being outside chart bounds
+                        if (labelX < chartArea.left) score += 1000;
+                        if (labelX + labelWidth > chartArea.right) score += 1000;
+                        if (labelY - labelHeight < chartArea.top) score += 1000;
+                        if (labelY > chartArea.bottom) score += 1000;
+
+                        // Check overlap with all data points
+                        for (const pt of allPoints) {
+                            const dx = Math.abs(labelX + labelWidth / 2 - pt.x);
+                            const dy = Math.abs(labelY - labelHeight / 2 - pt.y);
+                            if (dx < labelWidth / 2 + pointRadius + 2 && dy < labelHeight / 2 + pointRadius + 2) {
+                                score += 100;
+                            }
+                        }
+
+                        // Check overlap with already drawn labels
+                        for (const drawn of drawnLabels) {
+                            const dx = Math.abs(labelX - drawn.x);
+                            const dy = Math.abs(labelY - drawn.y);
+                            if (dx < Math.max(labelWidth, drawn.width) + 4 && dy < labelHeight + 2) {
+                                score += 50;
+                            }
+                        }
+
+                        return score;
+                    };
+
+                    meta.data.forEach((point, index) => {
+                        const dataPoint = chart.config._config.data.datasets[1].data[index];
+                        if (!dataPoint || !frontierModels.has(dataPoint.model)) return;
+
+                        const x = point.x;
+                        const y = point.y;
+
+                        // Shorten model name
+                        let label = dataPoint.model
+                            .replace(' (Thinking)', '')
+                            .replace(' (Nonthinking)', '')
+                            .replace(' (Reasoning)', '')
+                            .replace('Claude ', '')
+                            .replace(' Preview', '')
+                            .replace(' Fast', '');
+
+                        const labelWidth = ctx.measureText(label).width;
+                        const positions = getPositions(x, y, labelWidth);
+
+                        // Find best position with minimum overlap
+                        let bestPos = positions[0];
+                        let bestScore = Infinity;
+
+                        for (const pos of positions) {
+                            const score = getOverlapScore(pos.x, pos.y, labelWidth);
+                            if (score < bestScore) {
+                                bestScore = score;
+                                bestPos = pos;
+                            }
+                        }
+
+                        ctx.fillText(label, bestPos.x, bestPos.y);
+                        drawnLabels.push({ x: bestPos.x, y: bestPos.y, width: labelWidth });
+                    });
+
+                    ctx.restore();
+                }
+            };
+
+            Chart.register(frontierLabelPlugin);
+
+            // Set default font for all charts
+            Chart.defaults.font.family = '"Computer Modern Serif", ui-serif, Georgia, serif';
+
+            // Color mapping by lab
+            const labColors = {
+                "Anthropic": "#d97706",
+                "OpenAI": "#10b981",
+                "Google": "#3b82f6",
+                "xAI": "#8b5cf6",
+                "Moonshot": "#ec4899",
+                "DeepSeek": "#06b6d4",
+                "Zhipu": "#f43f5e",
+                "MiniMax": "#84cc16",
+                "Alibaba": "#f97316",
+                "Mistral": "#6366f1",
+                "Meta": "#0ea5e9",
+                "Cohere": "#14b8a6",
+            };
+
+            // Chart instances and states
+            const charts = {};
+            const chartStates = {
+                main: '1',
+                reasoning: 'yes',
+                country: 'USA',
+                weights: 'Closed',
+                costBar: '1',
+                costScatter: '1',
+                speedBar: '1',
+                speedScatter: '1'
+            };
+
+            function getFilteredData(filterType, filterValue) {
+                let filtered = benchmarkData.filter(d => d.index1 !== null);
+
+                if (filterType === 'main') {
+                    const key = filterValue === '1' ? 'index1' : 'index2';
+                    filtered = benchmarkData.filter(d => d[key] !== null);
+                    return filtered.sort((a, b) => b[key] - a[key]).map(d => ({
+                        model: d.model,
+                        score: d[key],
+                        lab: d.lab
+                    }));
+                } else if (filterType === 'reasoning') {
+                    filtered = filtered.filter(d => d.reasoning === filterValue);
+                } else if (filterType === 'country') {
+                    filtered = filtered.filter(d => d.country === filterValue);
+                } else if (filterType === 'weights') {
+                    filtered = filtered.filter(d => d.weights === filterValue);
+                }
+
+                return filtered.sort((a, b) => b.index1 - a.index1).map(d => ({
+                    model: d.model,
+                    score: d.index1,
+                    lab: d.lab
+                }));
+            }
+
+            function getChartData(chartId) {
+                const data = getFilteredData(chartId, chartStates[chartId]);
+                const uniqueLabs = [...new Set(data.map(d => d.lab))];
+                return {
+                    labels: data.map(d => d.model),
+                    datasets: [{
+                        data: data.map(d => d.score),
+                        backgroundColor: data.map(d => labColors[d.lab] || '#888'),
+                        borderRadius: 4,
+                        labs: uniqueLabs
+                    }]
+                };
+            }
+
+            function getChartOptions(title, yAxisLabel) {
+                return {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    layout: {
+                        padding: { left: 10, right: 10 }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: title,
+                            color: document.body.classList.contains('dark-mode') ? '#e5e5e5' : '#1a1a1a',
+                            font: { size: 16, weight: '600' },
+                            padding: { bottom: 10 }
+                        },
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            align: 'end',
+                            labels: {
+                                boxWidth: 10,
+                                boxHeight: 10,
+                                font: { size: 10 },
+                                color: document.body.classList.contains('dark-mode') ? '#999' : '#666',
+                                generateLabels: (chart) => {
+                                    const labs = chart.data.datasets[0]?.labs || [];
+                                    const fontColor = document.body.classList.contains('dark-mode') ? '#999' : '#666';
+                                    return labs.map(lab => ({
+                                        text: lab,
+                                        fillStyle: labColors[lab] || '#888',
+                                        strokeStyle: labColors[lab] || '#888',
+                                        fontColor: fontColor,
+                                        hidden: false
+                                    }));
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => `Score: ${context.raw.toFixed(2)}`
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: yAxisLabel,
+                                color: getComputedStyle(document.body).getPropertyValue('--text-secondary')
+                            },
+                            grid: { color: getComputedStyle(document.body).getPropertyValue('--border-color') },
+                            ticks: { color: getComputedStyle(document.body).getPropertyValue('--text-secondary') }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: {
+                                color: getComputedStyle(document.body).getPropertyValue('--text-primary'),
+                                font: { size: 9 },
+                                maxRotation: 45,
+                                minRotation: 45
+                            }
+                        }
+                    }
+                };
+            }
+
+            function getCostBarChartData(indexVersion) {
+                const costKey = indexVersion === '1' ? 'cost1' : 'cost2';
+                const filtered = benchmarkData
+                    .filter(d => d[costKey] !== null)
+                    .sort((a, b) => b[costKey] - a[costKey]);
+                const uniqueLabs = [...new Set(filtered.map(d => d.lab))];
+
+                return {
+                    labels: filtered.map(d => d.model),
+                    datasets: [{
+                        data: filtered.map(d => d[costKey]),
+                        backgroundColor: filtered.map(d => labColors[d.lab] || '#888'),
+                        borderRadius: 4,
+                        labs: uniqueLabs
+                    }]
+                };
+            }
+
+            function computeParetoFrontier(points) {
+                // Sort by x ascending
+                const sorted = [...points].sort((a, b) => a.x - b.x);
+                const frontier = [];
+                let maxY = -Infinity;
+
+                // For each point (in order of increasing x), if it has higher y than seen, it's on frontier
+                for (const point of sorted) {
+                    if (point.y > maxY) {
+                        frontier.push(point);
+                        maxY = point.y;
+                    }
+                }
+                return frontier;
+            }
+
+            function getCostScatterChartData(indexVersion) {
+                const indexKey = indexVersion === '1' ? 'index1' : 'index2';
+                const costKey = indexVersion === '1' ? 'cost1' : 'cost2';
+
+                const filtered = benchmarkData.filter(d => d[indexKey] !== null && d[costKey] !== null);
+                const uniqueLabs = [...new Set(filtered.map(d => d.lab))];
+
+                const points = filtered.map(d => ({
+                    x: d[costKey],
+                    y: d[indexKey],
+                    model: d.model,
+                    lab: d.lab
+                }));
+
+                const frontier = computeParetoFrontier(points);
+                const frontierModels = new Set(frontier.map(p => p.model));
+
+                // Mark frontier points
+                points.forEach(p => {
+                    p.onFrontier = frontierModels.has(p.model);
+                });
+
+                return {
+                    datasets: [
+                        {
+                            type: 'line',
+                            data: frontier,
+                            borderColor: document.body.classList.contains('dark-mode') ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.3)',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            pointRadius: 0,
+                            fill: false,
+                            tension: 0,
+                            order: 1
+                        },
+                        {
+                            type: 'scatter',
+                            data: points,
+                            backgroundColor: filtered.map(d => labColors[d.lab] || '#888'),
+                            pointRadius: 8,
+                            pointHoverRadius: 10,
+                            labs: uniqueLabs,
+                            order: 0
+                        }
+                    ],
+                    frontier: frontier
+                };
+            }
+
+            function getSpeedBarChartData(indexVersion) {
+                const speedKey = indexVersion === '1' ? 'speed1' : 'speed2';
+                const filtered = benchmarkData
+                    .filter(d => d[speedKey] !== null && d[speedKey] > 0)
+                    .sort((a, b) => b[speedKey] - a[speedKey]);
+                const uniqueLabs = [...new Set(filtered.map(d => d.lab))];
+
+                return {
+                    labels: filtered.map(d => d.model),
+                    datasets: [{
+                        data: filtered.map(d => d[speedKey]),
+                        backgroundColor: filtered.map(d => labColors[d.lab] || '#888'),
+                        borderRadius: 4,
+                        labs: uniqueLabs
+                    }]
+                };
+            }
+
+            function getSpeedScatterChartData(indexVersion) {
+                const indexKey = indexVersion === '1' ? 'index1' : 'index2';
+                const speedKey = indexVersion === '1' ? 'speed1' : 'speed2';
+
+                const filtered = benchmarkData.filter(d => d[indexKey] !== null && d[speedKey] !== null && d[speedKey] > 0);
+                const uniqueLabs = [...new Set(filtered.map(d => d.lab))];
+
+                const points = filtered.map(d => ({
+                    x: d[speedKey],
+                    y: d[indexKey],
+                    model: d.model,
+                    lab: d.lab
+                }));
+
+                const frontier = computeParetoFrontier(points);
+                const frontierModels = new Set(frontier.map(p => p.model));
+
+                // Mark frontier points
+                points.forEach(p => {
+                    p.onFrontier = frontierModels.has(p.model);
+                });
+
+                return {
+                    datasets: [
+                        {
+                            type: 'line',
+                            data: frontier,
+                            borderColor: document.body.classList.contains('dark-mode') ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.3)',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            pointRadius: 0,
+                            fill: false,
+                            tension: 0,
+                            order: 1
+                        },
+                        {
+                            type: 'scatter',
+                            data: points,
+                            backgroundColor: filtered.map(d => labColors[d.lab] || '#888'),
+                            pointRadius: 8,
+                            pointHoverRadius: 10,
+                            labs: uniqueLabs,
+                            order: 0
+                        }
+                    ],
+                    frontier: frontier
+                };
+            }
+
+            function getSpeedChartOptions(title) {
+                return {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    layout: {
+                        padding: { left: 10, right: 10 }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: title,
+                            color: document.body.classList.contains('dark-mode') ? '#e5e5e5' : '#1a1a1a',
+                            font: { size: 16, weight: '600' },
+                            padding: { bottom: 10 }
+                        },
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            align: 'end',
+                            labels: {
+                                boxWidth: 10,
+                                boxHeight: 10,
+                                font: { size: 10 },
+                                color: document.body.classList.contains('dark-mode') ? '#999' : '#666',
+                                generateLabels: (chart) => {
+                                    // Get labs from the scatter dataset (index 1)
+                                    const scatterDataset = chart.data.datasets.find(d => d.labs);
+                                    const labs = scatterDataset?.labs || [];
+                                    const fontColor = document.body.classList.contains('dark-mode') ? '#999' : '#666';
+                                    return labs.map(lab => ({
+                                        text: lab,
+                                        fillStyle: labColors[lab] || '#888',
+                                        strokeStyle: labColors[lab] || '#888',
+                                        fontColor: fontColor,
+                                        hidden: false
+                                    }));
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => {
+                                    const point = context.raw;
+                                    if (!point.model) return null; // Skip line dataset
+                                    return [
+                                        point.model,
+                                        `Intelligence: ${point.y.toFixed(2)}`,
+                                        `Speed: ${point.x.toFixed(2)}`
+                                    ];
+                                }
+                            },
+                            filter: (tooltipItem) => {
+                                return tooltipItem.raw.model !== undefined;
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Intelligence Score',
+                                color: getComputedStyle(document.body).getPropertyValue('--text-secondary')
+                            },
+                            grid: { color: getComputedStyle(document.body).getPropertyValue('--border-color') },
+                            ticks: { color: getComputedStyle(document.body).getPropertyValue('--text-secondary') }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Speed Index',
+                                color: getComputedStyle(document.body).getPropertyValue('--text-secondary')
+                            },
+                            grid: { color: getComputedStyle(document.body).getPropertyValue('--border-color') },
+                            ticks: { color: getComputedStyle(document.body).getPropertyValue('--text-secondary') }
+                        }
+                    }
+                };
+            }
+
+            function getCostChartOptions(title) {
+                return {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    layout: {
+                        padding: { left: 10, right: 10 }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: title,
+                            color: document.body.classList.contains('dark-mode') ? '#e5e5e5' : '#1a1a1a',
+                            font: { size: 16, weight: '600' },
+                            padding: { bottom: 10 }
+                        },
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            align: 'end',
+                            labels: {
+                                boxWidth: 10,
+                                boxHeight: 10,
+                                font: { size: 10 },
+                                color: document.body.classList.contains('dark-mode') ? '#999' : '#666',
+                                generateLabels: (chart) => {
+                                    // Get labs from the scatter dataset (index 1)
+                                    const scatterDataset = chart.data.datasets.find(d => d.labs);
+                                    const labs = scatterDataset?.labs || [];
+                                    const fontColor = document.body.classList.contains('dark-mode') ? '#999' : '#666';
+                                    return labs.map(lab => ({
+                                        text: lab,
+                                        fillStyle: labColors[lab] || '#888',
+                                        strokeStyle: labColors[lab] || '#888',
+                                        fontColor: fontColor,
+                                        hidden: false
+                                    }));
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => {
+                                    const point = context.raw;
+                                    if (!point.model) return null; // Skip line dataset
+                                    return [
+                                        point.model,
+                                        `Intelligence: ${point.y.toFixed(2)}`,
+                                        `Cost: ${point.x.toFixed(2)}`
+                                    ];
+                                }
+                            },
+                            filter: (tooltipItem) => {
+                                return tooltipItem.raw.model !== undefined;
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Intelligence Score',
+                                color: getComputedStyle(document.body).getPropertyValue('--text-secondary')
+                            },
+                            grid: { color: getComputedStyle(document.body).getPropertyValue('--border-color') },
+                            ticks: { color: getComputedStyle(document.body).getPropertyValue('--text-secondary') }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Cost Index',
+                                color: getComputedStyle(document.body).getPropertyValue('--text-secondary')
+                            },
+                            grid: { color: getComputedStyle(document.body).getPropertyValue('--border-color') },
+                            ticks: { color: getComputedStyle(document.body).getPropertyValue('--text-secondary') }
+                        }
+                    }
+                };
+            }
+
+            function getChartTitle(chartId) {
+                switch(chartId) {
+                    case 'main':
+                        return `Intelligence Rankings (Composite Index ${chartStates.main}.0)`;
+                    case 'reasoning':
+                        return `${chartStates.reasoning === 'yes' ? 'Reasoning' : 'Non-Reasoning'} Models (Composite Index 1.0)`;
+                    case 'country':
+                        return `${chartStates.country} Models (Composite Index 1.0)`;
+                    case 'weights':
+                        return `${chartStates.weights} Source Models (Composite Index 1.0)`;
+                    case 'costBar':
+                        return `Cost Rankings (Composite Index ${chartStates.costBar}.0)`;
+                    case 'costScatter':
+                        return `Intelligence vs. Cost (Composite Index ${chartStates.costScatter}.0)`;
+                    case 'speedBar':
+                        return `Speed Rankings (Composite Index ${chartStates.speedBar}.0)`;
+                    case 'speedScatter':
+                        return `Intelligence vs. Speed (Composite Index ${chartStates.speedScatter}.0)`;
+                    default:
+                        return '';
+                }
+            }
+
+            function createAllCharts() {
+                // Bar charts
+                const barChartConfigs = [
+                    { id: 'main', yLabel: 'Intelligence Score' },
+                    { id: 'reasoning', yLabel: 'Intelligence Score' },
+                    { id: 'country', yLabel: 'Intelligence Score' },
+                    { id: 'weights', yLabel: 'Intelligence Score' }
+                ];
+
+                barChartConfigs.forEach(config => {
+                    const canvas = document.getElementById(config.id + 'Chart');
+                    canvas.parentElement.style.height = '500px';
+                    charts[config.id] = new Chart(canvas.getContext('2d'), {
+                        type: 'bar',
+                        data: getChartData(config.id),
+                        options: getChartOptions(getChartTitle(config.id), config.yLabel)
+                    });
+                });
+
+                // Cost bar chart
+                const costBarCanvas = document.getElementById('costBarChart');
+                costBarCanvas.parentElement.style.height = '500px';
+                charts.costBar = new Chart(costBarCanvas.getContext('2d'), {
+                    type: 'bar',
+                    data: getCostBarChartData(chartStates.costBar),
+                    options: getChartOptions(getChartTitle('costBar'), 'Cost Index')
+                });
+
+                // Cost scatter chart
+                const costScatterCanvas = document.getElementById('costScatterChart');
+                costScatterCanvas.parentElement.style.height = '500px';
+                const costScatterData = getCostScatterChartData(chartStates.costScatter);
+                charts.costScatter = new Chart(costScatterCanvas.getContext('2d'), {
+                    type: 'scatter',
+                    data: costScatterData,
+                    options: getCostChartOptions(getChartTitle('costScatter'))
+                });
+
+                // Speed bar chart
+                const speedBarCanvas = document.getElementById('speedBarChart');
+                speedBarCanvas.parentElement.style.height = '500px';
+                charts.speedBar = new Chart(speedBarCanvas.getContext('2d'), {
+                    type: 'bar',
+                    data: getSpeedBarChartData(chartStates.speedBar),
+                    options: getChartOptions(getChartTitle('speedBar'), 'Speed Index')
+                });
+
+                // Speed scatter chart
+                const speedScatterCanvas = document.getElementById('speedScatterChart');
+                speedScatterCanvas.parentElement.style.height = '500px';
+                const speedScatterData = getSpeedScatterChartData(chartStates.speedScatter);
+                charts.speedScatter = new Chart(speedScatterCanvas.getContext('2d'), {
+                    type: 'scatter',
+                    data: speedScatterData,
+                    options: getSpeedChartOptions(getChartTitle('speedScatter'))
+                });
+            }
+
+            function switchChart(chartId, value) {
+                chartStates[chartId] = value;
+
+                // Update toggle buttons
+                document.querySelectorAll(`[data-chart="${chartId}"]`).forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.value === value);
+                });
+
+                // Update chart data
+                let newData;
+                if (chartId === 'costScatter') {
+                    newData = getCostScatterChartData(value);
+                } else if (chartId === 'costBar') {
+                    newData = getCostBarChartData(value);
+                } else if (chartId === 'speedScatter') {
+                    newData = getSpeedScatterChartData(value);
+                } else if (chartId === 'speedBar') {
+                    newData = getSpeedBarChartData(value);
+                } else {
+                    newData = getChartData(chartId);
+                }
+
+                charts[chartId].data = newData;
+                charts[chartId].config._config.data = newData; // Update for frontier plugin
+
+                // Update chart title
+                charts[chartId].options.plugins.title.text = getChartTitle(chartId);
+
+                charts[chartId].update();
+            }
+
+            // Download chart as PNG with background and padding
+            function downloadChart(canvasId, chartId) {
+                const canvas = document.getElementById(canvasId);
+                const title = getChartTitle(chartId);
+                const filename = title.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+
+                // Add symmetric padding
+                const paddingTop = 30;
+                const paddingRight = 30;
+                const paddingBottom = 40;
+                const paddingLeft = 30;
+
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = canvas.width + paddingLeft + paddingRight;
+                tempCanvas.height = canvas.height + paddingTop + paddingBottom;
+                const ctx = tempCanvas.getContext('2d');
+
+                // Fill with background color
+                const bgColor = document.body.classList.contains('dark-mode') ? '#252525' : '#f5f2ed';
+                ctx.fillStyle = bgColor;
+                ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+
+                // Draw the chart with padding
+                ctx.drawImage(canvas, paddingLeft, paddingTop);
+
+                // Download
+                const link = document.createElement('a');
+                link.download = filename + '.png';
+                link.href = tempCanvas.toDataURL('image/png');
+                link.click();
+            }
+
+            // Theme handling
+            function isDarkMode() {
+                return localStorage.getItem('darkMode') === 'true';
+            }
+
+            function toggleTheme() {
+                const isDark = document.body.classList.toggle('dark-mode');
+                localStorage.setItem('darkMode', isDark);
+                updateThemeIcon();
+
+                // Recreate all charts with new colors
+                Object.keys(charts).forEach(key => charts[key].destroy());
+                createAllCharts();
+            }
+
+            function updateThemeIcon() {
+                const icon = document.getElementById('theme-icon');
+                icon.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+            }
+
+            // Initialize
+            if (isDarkMode()) {
+                document.body.classList.add('dark-mode');
+            }
+
+            document.addEventListener('DOMContentLoaded', async () => {
+                updateThemeIcon();
+                await loadBenchmarkData();
+                createAllCharts();
+            });
+        </script>
+    </body>
+</html>

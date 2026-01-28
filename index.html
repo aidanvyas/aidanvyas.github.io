@@ -4,52 +4,302 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Aidan Vyas</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/aaaakshat/cm-web-fonts@latest/fonts.css">
         <style>
+            :root {
+                --text-primary: #1a1a1a;
+                --text-secondary: #666;
+                --bg-primary: #faf8f5;
+                --bg-secondary: #f5f2ed;
+                --border-color: #e5e5e5;
+                --link-color: #0066cc;
+                --link-hover: #0052a3;
+                --selection-bg: rgba(0, 100, 255, 0.15);
+                --max-width: 680px;
+            }
+
+            body.dark-mode {
+                --text-primary: #e5e5e5;
+                --text-secondary: #999;
+                --bg-primary: #1a1a1a;
+                --bg-secondary: #252525;
+                --border-color: #333;
+                --link-color: #6db3f2;
+                --link-hover: #8bc4f7;
+            }
+
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            ::selection {
+                background: var(--selection-bg);
+            }
+
+            html {
+                font-size: 18px;
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+            }
+
             body {
-                max-width: 70ch;
+                font-family: "Computer Modern Serif", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+                color: var(--text-primary);
+                background: var(--bg-primary);
+                line-height: 1.6;
+                transition: background-color 0.3s ease, color 0.3s ease;
+            }
+
+            .container {
+                max-width: var(--max-width);
                 margin: 0 auto;
-                padding-left: 1em;
-                padding-right: 1em;
+                padding: 2rem 1.5rem;
+            }
+
+            header {
+                margin-bottom: 3rem;
+                padding-bottom: 2rem;
+                border-bottom: 1px solid var(--border-color);
+                position: relative;
+            }
+
+            h1 {
+                font-size: 2.2rem;
+                font-weight: 600;
+                margin-bottom: 0.5rem;
+                text-wrap: balance;
+                letter-spacing: -0.02em;
+            }
+
+            .subtitle {
+                font-size: 1.1rem;
+                color: var(--text-secondary);
+                line-height: 1.5;
+            }
+
+            .theme-toggle {
+                position: absolute;
+                top: 0;
+                right: 0;
+                background: none;
+                border: 1px solid var(--border-color);
+                border-radius: 8px;
+                padding: 0.5rem 0.75rem;
+                cursor: pointer;
+                font-size: 1rem;
+                color: var(--text-primary);
+                transition: all 0.2s ease;
+            }
+
+            .theme-toggle:hover {
+                background: var(--bg-secondary);
+                border-color: var(--text-secondary);
+            }
+
+            section {
+                margin-bottom: 3rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+                font-weight: 600;
+                margin-bottom: 1.2rem;
+                letter-spacing: -0.01em;
+            }
+
+            p {
+                margin-bottom: 1.2rem;
+                line-height: 1.7;
+            }
+
+            a {
+                color: var(--link-color);
+                text-decoration: none;
+                transition: color 0.2s ease;
+                border-bottom: 1px solid transparent;
+            }
+
+            a:hover {
+                color: var(--link-hover);
+                border-bottom-color: var(--link-hover);
+            }
+
+            ul {
+                list-style: none;
+                padding: 0;
+            }
+
+            ul li {
+                margin-bottom: 0.8rem;
+                padding-left: 1.5rem;
+                position: relative;
+            }
+
+            ul li::before {
+                content: "•";
+                position: absolute;
+                left: 0;
+                color: var(--text-secondary);
+            }
+
+            .writing-list li {
+                padding-left: 0;
+                margin-bottom: 1rem;
+            }
+
+            .writing-list li::before {
+                display: none;
+            }
+
+            .writing-item {
+                display: block;
+                padding: 1rem;
+                border: 1px solid var(--border-color);
+                border-radius: 8px;
+                transition: all 0.2s ease;
+            }
+
+            .writing-item:hover {
+                background: var(--bg-secondary);
+                border-color: var(--text-secondary);
+                text-decoration: none;
+            }
+
+            .writing-title {
+                font-size: 1.1rem;
+                font-weight: 600;
+                color: var(--text-primary);
+                margin-bottom: 0.3rem;
+            }
+
+            .writing-date {
+                font-size: 0.9rem;
+                color: var(--text-secondary);
+            }
+
+            hr {
+                border: none;
+                border-top: 1px solid var(--border-color);
+                margin: 2.5rem 0;
+            }
+
+            .contact-info {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 2rem;
+            }
+
+            .contact-item {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            footer {
+                margin-top: 4rem;
+                padding-top: 2rem;
+                border-top: 1px solid var(--border-color);
+                text-align: center;
+                color: var(--text-secondary);
+                font-size: 0.9rem;
+            }
+
+            @media (max-width: 640px) {
+                html {
+                    font-size: 16px;
+                }
+                
+                h1 {
+                    font-size: 1.8rem;
+                }
+                
+                .container {
+                    padding: 1.5rem 1rem;
+                }
+
+                .theme-toggle {
+                    position: static;
+                    margin-top: 1rem;
+                }
             }
         </style>
     </head>
     <body>
-        <h1 align="center">Aidan Vyas</h1>
+        <div class="container">
+            <header>
+                <h1>Aidan Vyas</h1>
+                <p class="subtitle">TKTK</p>
+                <button class="theme-toggle" onclick="toggleTheme()">
+                    <span id="theme-icon">🌙</span>
+                </button>
+            </header>
 
-        <p>
-            I'm Aidan Vyas, a senior at Rice University studying Economics and
-            Computer Science. I'll be moving to NYC this summer where I'll be
-            working as a quantitative researcher at a systematic global macro
-            hedge fund (if you're in town, please reach out and say hi). I am
-            interested in empirical asset pricing, artificial intelligence,
-            politics, longevity, sports, and food.
-        </p>
+            <section>
+                <h2>About</h2>
+                <p>TKTK</p>
+            </section>
 
-        <hr />
+            <section>
+                <h2>Writing</h2>
+                <p>TKTK</p>
+            </section>
 
-        <h2>Writing</h2>
-        <ul>
-            <li>
-                <a href="defense_of_finance.html"
-                    >In Defense of Finance and AI</a
-                >
-            </li>
-        </ul>
+            <section>
+                <h2>Projects</h2>
+                <ul class="writing-list">
+                    <li>
+                        <a href="llm_benchmarks.html" class="writing-item">
+                            <div class="writing-title">LLM Benchmark Results</div>
+                            <div class="writing-date">Comparing frontier language models across composite intelligence indices</div>
+                        </a>
+                    </li>
+                </ul>
+            </section>
 
-        <hr />
+            <section>
+                <h2>Contact</h2>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <span>Email:</span>
+                        <a href="mailto:aidanvyas@gmail.com">aidanvyas@gmail.com</a>
+                    </div>
+                    <div class="contact-item">
+                        <span>Phone:</span>
+                        <a href="tel:+8324995541">+1 (832) 499-5541</a>
+                    </div>
+                </div>
+            </section>
 
-        <h2>Contact Me</h2>
-        <p>
-            Email:
-            <a href="mailto:aidanvyas@gmail.com">aidanvyas@gmail.com</a>
-        </p>
-        <p>
-            Phone:
-            <a href="tel:+8324995541">+1 (832) 499-5541</a>
-        </p>
+            <footer>
+                <p>&copy; 2026 Aidan Vyas</p>
+            </footer>
+        </div>
 
-        <hr />
+        <script>
+            function isDarkMode() {
+                return localStorage.getItem('darkMode') === 'true';
+            }
 
-        <p align="center">&copy; 2025 Aidan Vyas</p>
+            function toggleTheme() {
+                const isDark = document.body.classList.toggle('dark-mode');
+                localStorage.setItem('darkMode', isDark);
+                updateThemeIcon();
+            }
+
+            function updateThemeIcon() {
+                const icon = document.getElementById('theme-icon');
+                icon.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+            }
+
+            // Apply theme on load
+            if (isDarkMode()) {
+                document.body.classList.add('dark-mode');
+            }
+            
+            // Update icon after DOM loads
+            document.addEventListener('DOMContentLoaded', updateThemeIcon);
+        </script>
     </body>
 </html>
